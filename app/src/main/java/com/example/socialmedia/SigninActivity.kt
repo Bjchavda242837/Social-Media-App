@@ -11,6 +11,8 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.transition.Visibility
+import com.example.socialmedia.Model.User
+import com.example.socialmedia.daos.UserDao
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -52,6 +54,12 @@ class SigninActivity : AppCompatActivity() {
             signIn() } // ✅ Calling only ONE signIn() function
 
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        UpdateUi(currentUser)
     }
 
     private fun signIn() {
@@ -106,6 +114,11 @@ class SigninActivity : AppCompatActivity() {
 
     private fun UpdateUi(firebaseUser: FirebaseUser?) {
         if (firebaseUser != null){
+
+            val user = User(firebaseUser.uid, firebaseUser.displayName.toString(),firebaseUser.photoUrl.toString())
+            val userdao = UserDao()
+            userdao.addUser(user)
+
             val mainAc = Intent(this,MainActivity::class.java)
             startActivity(mainAc)
             finish()
